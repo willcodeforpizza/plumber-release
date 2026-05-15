@@ -23,6 +23,10 @@ Add-BuildTask -Name PublishGitHubRelease -Jobs {
         Write-Build Yellow 'Skipping PublishGitHubRelease because this version is already released.'
         return
     }
+    if ('GitHub' -notin $config.ReleaseTargets) {
+        Write-Build Yellow 'Skipping PublishGitHubRelease because GitHub is not a release target.'
+        return
+    }
 
     if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
         Write-Error 'GitHub CLI is required to publish a GitHub release.'

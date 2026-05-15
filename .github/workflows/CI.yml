@@ -18,7 +18,7 @@ jobs:
         os: [ubuntu-latest, windows-latest]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
 
@@ -26,11 +26,14 @@ jobs:
         shell: pwsh
         run: |
           Set-PSRepository PSGallery -InstallationPolicy Trusted
-          Install-Module Plumber -RequiredVersion 0.0.27 -Scope CurrentUser -Force
-          Install-Module InvokeBuild -RequiredVersion 5.14.23 -Scope CurrentUser -Force
-          Install-Module Pester -RequiredVersion 5.7.1 -Scope CurrentUser -Force
-          Install-Module PSScriptAnalyzer -RequiredVersion 1.25.0 -Scope CurrentUser -Force
-          Install-Module powershell-yaml -RequiredVersion 0.4.12 -Scope CurrentUser -Force
+          (Import-PowerShellDataFile ./Plumber.Release.psd1).ModuleList |
+              ForEach-Object {
+                Install-Module `
+                  -Name $_.ModuleName `
+                  -RequiredVersion $_.ModuleVersion `
+                  -Scope CurrentUser `
+                  -Force
+              }
 
       - name: Run Validate
         shell: pwsh
@@ -50,25 +53,27 @@ jobs:
       cancel-in-progress: false
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install module dependencies
         shell: pwsh
         run: |
           Set-PSRepository PSGallery -InstallationPolicy Trusted
-          Install-Module Plumber -RequiredVersion 0.0.27 -Scope CurrentUser -Force
-          Install-Module InvokeBuild -RequiredVersion 5.14.23 -Scope CurrentUser -Force
-          Install-Module Pester -RequiredVersion 5.7.1 -Scope CurrentUser -Force
-          Install-Module PSScriptAnalyzer -RequiredVersion 1.25.0 -Scope CurrentUser -Force
-          Install-Module powershell-yaml -RequiredVersion 0.4.12 -Scope CurrentUser -Force
-          Install-Module Microsoft.PowerShell.PSResourceGet -RequiredVersion 1.2.0 -Scope CurrentUser -Force
+          (Import-PowerShellDataFile ./Plumber.Release.psd1).ModuleList |
+              ForEach-Object {
+                Install-Module `
+                  -Name $_.ModuleName `
+                  -RequiredVersion $_.ModuleVersion `
+                  -Scope CurrentUser `
+                  -Force
+              }
 
       - name: Run Release
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_RELEASE_CONFIRM: true
           PSGALLERY_API_KEY: ${{ secrets.PSGALLERY_API_KEY }}
+          GITHUB_RELEASE_CONFIRM: true
           PSGALLERY_PUBLISH_CONFIRM: true
         run: |
           Import-Module ./Plumber.Release.psd1 -Force

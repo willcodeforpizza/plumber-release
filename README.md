@@ -22,14 +22,84 @@ Publishing is dry-run by default. Set `PSGALLERY_PUBLISH_CONFIRM=true` and
 Import-Module Plumber.Release
 
 . (Get-PlumberReleaseTaskLoader) -Config @{
-    ModuleManifest         = 'MyModule.psd1'
-    ModuleBuildAddItems    = @('assets/*.json')
-    ModuleBuildRemoveItems = @('docs')
+    ModuleManifest          = 'MyModule.psd1'
+    ModuleBuildIncludeItems = @('assets/*.json')
+    ModuleBuildExcludeItems = @('docs')
+    ReleaseTargets          = @('GitHub')
 }
 ```
+
+| Key | Default | Description |
+| --- | --- | --- |
+| `ModuleManifest` | First `*.psd1` under `ModuleRoot` | Manifest used to discover the module name and version. |
+| `ModuleRoot` | Current build root | Repository or module root used for relative paths. |
+| `ModuleName` | Manifest base name | Module name used for output paths and manifest lookup. |
+| `ModuleOutputRoot` | Temp path named for the module | Clean staging folder passed to `Publish-PSResource`. |
+| `ModuleBuildIncludeItems` | None | Includes files, folders, or relative glob patterns in addition to the built-in list. |
+| `ModuleBuildExcludeItems` | None | Excludes items from the final list using wildcard matching. |
+| `ReleaseTargets` | `@('PSGallery', 'GitHub')` | Release destinations. Use `@('GitHub')` to skip PowerShell Gallery publishing. |
+| `GitRemote` | `origin` | Remote used when checking and pushing release tags. |
+
+The built-in item list is:
+
+```text
+Private
+Public
+Resource
+Tasks
+docs
+LICENSE
+README.md
+CHANGELOG.md
+<ModuleName>.psd1
+<ModuleName>.psm1
+```
+
+Missing items are skipped.
 
 Run the release pipeline:
 
 ```powershell
 Invoke-Build -File ./Release.build.ps1 Release
 ```
+
+## Repository setup
+
+Add the PowerShell Gallery API key as a repository secret:
+
+```bash
+gh secret set PSGALLERY_API_KEY --repo owner/repo
+```
+
+The workflow uses GitHub's built-in `GITHUB_TOKEN` for tag pushes and GitHub
+release creation. The workflow needs `contents: write` on the release job.
+
+Protect the `main` branch:
+
+```bash
+gh api --method PUT repos/owner/repo/branches/main/protection --input - <<'JSON'
+{
+  "required_status_checks": {
+    "strict": true,
+    "contexts": [
+      "ubuntu-latest",
+      "windows-latest"
+    ]
+  },
+  "enforce_admins": false,
+  "required_pull_request_reviews": {
+    "dismiss_stale_reviews": true,
+    "require_code_owner_reviews": false,
+    "required_approving_review_count": 1
+  },
+  "restrictions": null,
+  "allow_force_pushes": false,
+  "allow_deletions": false,
+  "required_linear_history": false,
+  "required_conversation_resolution": true
+}
+JSON
+```
+
+Do not require the `Release` check in branch protection. It runs only after a
+push to `main`; pull requests only run the OS validation matrix.

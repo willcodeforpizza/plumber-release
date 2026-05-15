@@ -23,6 +23,10 @@ Add-BuildTask -Name PublishModule -Jobs BuildModule, {
         Write-Build Yellow 'Skipping PublishModule because this version is already released.'
         return
     }
+    if ('PSGallery' -notin $config.ReleaseTargets) {
+        Write-Build Yellow 'Skipping PublishModule because PSGallery is not a release target.'
+        return
+    }
 
     $apiKey = $env:PSGALLERY_API_KEY
     $publishConfirmed = $env:PSGALLERY_PUBLISH_CONFIRM -eq 'true'
@@ -39,7 +43,7 @@ Add-BuildTask -Name PublishModule -Jobs BuildModule, {
 
     $publishSplat = @{
         Path       = $config.ModuleOutputRoot
-        Repository = $config.Repository
+        Repository = 'PSGallery'
         Verbose    = $true
         WhatIf     = -not $publishConfirmed
     }

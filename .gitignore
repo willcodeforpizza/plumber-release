@@ -1,3 +1,4 @@
 out/
+coverage.xml
 *.xml
 *.log
