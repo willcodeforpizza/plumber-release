@@ -7,8 +7,9 @@
 
     .PARAMETER Config
     Repository-specific release configuration. Supported keys are
-    ModuleManifest, ModuleRoot, ModuleName, ModuleOutputRoot, ModuleBuildItems,
-    ModuleBuildExtraItems, Repository and GitRemote.
+    ModuleManifest, ModuleRoot, ModuleName, ModuleOutputRoot,
+    ModuleBuildIncludeItems, ModuleBuildExcludeItems,
+    ReleaseTargets and GitRemote.
 #>
 param(
     [hashtable]
@@ -23,6 +24,7 @@ foreach ($privateScript in Get-ChildItem (Join-Path $moduleRoot 'Private') -Filt
 
 $script:PlumberReleaseConfig = Resolve-PlumberReleaseConfig -Config $Config -BuildRoot $BuildRoot
 
+. (Join-Path $PSScriptRoot 'SetReleaseState.ps1')
 . (Join-Path $PSScriptRoot 'BuildModule.ps1')
 . (Join-Path $PSScriptRoot 'PublishModule.ps1')
 . (Join-Path $PSScriptRoot 'PublishGitHubRelease.ps1')

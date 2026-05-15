@@ -26,27 +26,58 @@ Describe 'Resolve-PlumberReleaseConfig' {
 
         $config.ModuleRoot | Should -Be $moduleRoot
         $config.ModuleName | Should -Be 'Example'
-        $config.Repository | Should -Be 'PSGallery'
         $config.GitRemote | Should -Be 'origin'
+        $config.ReleaseTargets | Should -Be @('PSGallery', 'GitHub')
         $config.ModuleBuildItems | Should -Contain 'Example.psd1'
         $config.ModuleBuildItems | Should -Contain 'Example.psm1'
-    }
-
-    It 'adds extra build items to the default item list' {
-        $config = Resolve-PlumberReleaseConfig -BuildRoot $moduleRoot -Config @{
-            ModuleManifest        = 'Example.psd1'
-            ModuleBuildExtraItems = @('docs')
-        }
-
+        $config.ModuleBuildItems | Should -Contain 'Tasks'
         $config.ModuleBuildItems | Should -Contain 'docs'
     }
 
-    It 'allows callers to replace the build item list' {
+    It 'includes build item globs in the default item list' {
         $config = Resolve-PlumberReleaseConfig -BuildRoot $moduleRoot -Config @{
-            ModuleManifest   = 'Example.psd1'
-            ModuleBuildItems = @('OnlyThis')
+            ModuleManifest          = 'Example.psd1'
+            ModuleBuildIncludeItems = @('assets/*.json')
         }
 
-        $config.ModuleBuildItems | Should -Be @('OnlyThis')
+        $config.ModuleBuildItems | Should -Contain 'assets/*.json'
+    }
+
+    It 'does not add empty build items when optional config is omitted' {
+        $config = Resolve-PlumberReleaseConfig -BuildRoot $moduleRoot -Config @{
+            ModuleManifest = 'Example.psd1'
+        }
+
+        $config.ModuleBuildItems | Should -Not -Contain ''
+        $config.ModuleBuildItems | Should -Not -Contain $null
+    }
+
+    It 'excludes build item globs from the item list' {
+        $config = Resolve-PlumberReleaseConfig -BuildRoot $moduleRoot -Config @{
+            ModuleManifest          = 'Example.psd1'
+            ModuleBuildExcludeItems = @('docs', 'Resource*')
+        }
+
+        $config.ModuleBuildItems | Should -Not -Contain 'docs'
+        $config.ModuleBuildItems | Should -Not -Contain 'Resource'
+        $config.ModuleBuildItems | Should -Contain 'Tasks'
+    }
+
+    It 'allows callers to choose release targets' {
+        $config = Resolve-PlumberReleaseConfig -BuildRoot $moduleRoot -Config @{
+            ModuleManifest = 'Example.psd1'
+            ReleaseTargets = @('GitHub')
+        }
+
+        $config.ReleaseTargets | Should -Be @('GitHub')
+    }
+
+    It 'rejects unsupported release targets' {
+        {
+            Resolve-PlumberReleaseConfig -BuildRoot $moduleRoot -Config @{
+                ModuleManifest = 'Example.psd1'
+                ReleaseTargets = @('NuGet')
+            }
+        } | Should -Throw "Unsupported release target 'NuGet'*"
     }
 }

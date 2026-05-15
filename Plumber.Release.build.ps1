@@ -3,11 +3,8 @@ $module = Get-Module Plumber |
         Select-Object -First 1
 if (-not $module) {
     $plumberManifest = Join-Path $PSScriptRoot '../plumber/Plumber.psd1'
-    if (Test-Path $plumberManifest) {
-        $module = Import-Module $plumberManifest -Force -PassThru
-    } else {
-        $module = Import-Module Plumber -PassThru
-    }
+    $modulePath = if (Test-Path $plumberManifest) {$plumberManifest} else {'Plumber'}
+    $module = Import-Module $modulePath -Force -PassThru
 }
 
 Import-Module (Join-Path $PSScriptRoot 'Plumber.Release.psd1') -Force

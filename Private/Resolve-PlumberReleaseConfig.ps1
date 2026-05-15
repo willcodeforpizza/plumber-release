@@ -48,6 +48,8 @@ function Resolve-PlumberReleaseConfig {
         'Private',
         'Public',
         'Resource',
+        'Tasks',
+        'docs',
         'LICENSE',
         'README.md',
         'CHANGELOG.md',
@@ -55,10 +57,29 @@ function Resolve-PlumberReleaseConfig {
         "$moduleName.psm1"
     )
 
-    $buildItems = if ($Config.ModuleBuildItems) {
-        @($Config.ModuleBuildItems)
+    $buildItems = $defaultItems + @($Config.ModuleBuildIncludeItems)
+    $buildItems = @($buildItems | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+
+    $excludeItems = @($Config.ModuleBuildExcludeItems |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    if ($excludeItems) {
+        $buildItems = @($buildItems | Where-Object {
+            $item = $_
+            -not ($excludeItems | Where-Object { $item -like $_ })
+        })
+    }
+
+    $releaseTargets = if ($Config.ReleaseTargets) {
+        @($Config.ReleaseTargets)
     } else {
-        $defaultItems + @($Config.ModuleBuildExtraItems)
+        @('PSGallery', 'GitHub')
+    }
+    $releaseTargets = @($releaseTargets | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    $supportedTargets = @('PSGallery', 'GitHub')
+    foreach ($target in $releaseTargets) {
+        if ($target -notin $supportedTargets) {
+            throw "Unsupported release target '$target'. Supported targets: $($supportedTargets -join ', ')."
+        }
     }
 
     [pscustomobject]@{
@@ -71,7 +92,7 @@ function Resolve-PlumberReleaseConfig {
             Join-Path ([System.IO.Path]::GetTempPath()) $moduleName
         }
         ModuleBuildItems = $buildItems
-        Repository       = if ($Config.Repository) { $Config.Repository } else { 'PSGallery' }
+        ReleaseTargets   = $releaseTargets
         GitRemote        = if ($Config.GitRemote) { $Config.GitRemote } else { 'origin' }
     }
 }

@@ -13,11 +13,39 @@
     CmdletsToExport      = @()
     VariablesToExport    = @()
     AliasesToExport      = @()
+    ModuleList           = @(
+        @{
+            ModuleName    = 'Plumber'
+            ModuleVersion = '0.0.27'
+        }
+        @{
+            ModuleName    = 'InvokeBuild'
+            ModuleVersion = '5.14.23'
+        }
+        @{
+            ModuleName    = 'Pester'
+            ModuleVersion = '5.7.1'
+        }
+        @{
+            ModuleName    = 'PSScriptAnalyzer'
+            ModuleVersion = '1.25.0'
+        }
+        @{
+            ModuleName    = 'powershell-yaml'
+            ModuleVersion = '0.4.12'
+        }
+        @{
+            ModuleName    = 'Microsoft.PowerShell.PSResourceGet'
+            ModuleVersion = '1.2.0'
+        }
+    )
     PrivateData          = @{
         PSData = @{
-            Tags       = @('InvokeBuild', 'Release', 'PowerShell')
-            ProjectUri = 'https://github.com/willcodeforpizza/plumber-release'
-            LicenseUri = 'https://github.com/willcodeforpizza/plumber-release/blob/main/LICENSE'
+            Tags         = @('InvokeBuild', 'Release', 'PowerShell')
+            ProjectUri   = 'https://github.com/willcodeforpizza/plumber-release'
+            LicenseUri   = 'https://github.com/willcodeforpizza/plumber-release/blob/main/LICENSE'
+            ReleaseNotes = 'https://github.com/willcodeforpizza/plumber-release/blob/main/CHANGELOG.md'
+
         }
     }
 }
