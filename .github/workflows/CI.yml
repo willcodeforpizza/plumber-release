@@ -11,6 +11,7 @@ permissions:
 jobs:
   test:
     name: ${{ matrix.os }}
+    if: github.event_name == 'pull_request'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -32,7 +33,8 @@ jobs:
                   -Name $_.ModuleName `
                   -RequiredVersion $_.ModuleVersion `
                   -Scope CurrentUser `
-                  -Force
+                  -Force `
+                  -SkipPublisherCheck
               }
 
       - name: Run Validate
@@ -44,7 +46,6 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       contents: write
@@ -65,7 +66,8 @@ jobs:
                   -Name $_.ModuleName `
                   -RequiredVersion $_.ModuleVersion `
                   -Scope CurrentUser `
-                  -Force
+                  -Force `
+                  -SkipPublisherCheck
               }
 
       - name: Run Release
@@ -76,5 +78,12 @@ jobs:
           GITHUB_RELEASE_CONFIRM: true
           PSGALLERY_PUBLISH_CONFIRM: true
         run: |
+          $repositoryStore = Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'PSResourceGet'
+          New-Item -Path $repositoryStore -ItemType Directory -Force | Out-Null
+          $repository = Get-PSResourceRepository -Name PSGallery -ErrorAction SilentlyContinue
+          if (-not $repository) {
+            Register-PSResourceRepository -PSGallery
+          }
+
           Import-Module ./Plumber.Release.psd1 -Force
           Invoke-Build -File ./Plumber.Release.build.ps1 Release
