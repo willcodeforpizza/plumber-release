@@ -64,7 +64,5 @@ jobs:
           PSGALLERY_API_KEY: ${{ secrets.PSGALLERY_API_KEY }}
           PSGALLERY_PUBLISH_CONFIRM: true
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           Import-Module ./Plumber.Release.psd1 -Force
           Invoke-Build -File ./Plumber.Release.build.ps1 Release

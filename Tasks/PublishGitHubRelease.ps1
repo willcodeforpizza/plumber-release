@@ -19,21 +19,18 @@ $script:_loadedPlumberReleasePublishGitHubRelease = $true
 
 Add-BuildTask -Name PublishGitHubRelease -Jobs {
     $config = $script:PlumberReleaseConfig
+    if (-not $script:PlumberReleaseState.ShouldRelease) {
+        Write-Build Yellow 'Skipping PublishGitHubRelease because this version is already released.'
+        return
+    }
 
     if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
         Write-Error 'GitHub CLI is required to publish a GitHub release.'
         return
     }
 
-    $manifest = Test-ModuleManifest -Path $config.ModuleManifest
-    $version = $manifest.Version.ToString()
-    $tagName = "v$version"
-
-    $existingTag = git tag --list $tagName
-    if ($existingTag) {
-        Write-Error "Git tag already exists: $tagName"
-        return
-    }
+    $version = $script:PlumberReleaseState.Version
+    $tagName = $script:PlumberReleaseState.TagName
 
     $changelogPath = Join-Path $config.ModuleRoot 'CHANGELOG.md'
     $changelog = Get-Content $changelogPath

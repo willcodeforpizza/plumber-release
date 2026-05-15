@@ -19,6 +19,11 @@ $script:_loadedPlumberReleasePublishModule = $true
 
 Add-BuildTask -Name PublishModule -Jobs BuildModule, {
     $config = $script:PlumberReleaseConfig
+    if (-not $script:PlumberReleaseState.ShouldRelease) {
+        Write-Build Yellow 'Skipping PublishModule because this version is already released.'
+        return
+    }
+
     $apiKey = $env:PSGALLERY_API_KEY
     $publishConfirmed = $env:PSGALLERY_PUBLISH_CONFIRM -eq 'true'
 

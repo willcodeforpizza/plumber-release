@@ -19,5 +19,5 @@
 if ($script:_loadedPlumberReleaseRelease) { return }
 $script:_loadedPlumberReleaseRelease = $true
 
-Add-BuildTask -Name Release -Jobs BuildModule, PublishModule, PublishGitHubRelease
+Add-BuildTask -Name Release -Jobs SetReleaseState, BuildModule, PublishModule, PublishGitHubRelease
 Add-BuildTask -Name . -Jobs Release
