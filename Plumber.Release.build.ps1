@@ -10,9 +10,15 @@ if (-not $module) {
 Import-Module (Join-Path $PSScriptRoot 'Plumber.Release.psd1') -Force
 
 . (Get-PlumberTaskLoader) -Config @{
-    ModuleManifest       = 'Plumber.Release.psd1'
-    PublicFunctionPrefix = 'PlumberRelease'
-    VersionSource        = 'GitTag'
+    ModuleManifest = 'Plumber.Release.psd1'
+    Tasks          = @{
+        ModuleVersion        = @{
+            Source = 'GitTag'
+        }
+        PublicFunctionPrefix = @{
+            Prefix = 'PlumberRelease'
+        }
+    }
 }
 
 . (Get-PlumberReleaseTaskLoader) -Config @{
