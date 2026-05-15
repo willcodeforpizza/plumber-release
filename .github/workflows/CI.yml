@@ -6,7 +6,7 @@ on:
   pull_request:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   test:
@@ -19,16 +19,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Install module dependencies
         shell: pwsh
         run: |
           Set-PSRepository PSGallery -InstallationPolicy Trusted
-          Install-Module Plumber -Scope CurrentUser -Force
-          Install-Module InvokeBuild -MinimumVersion 5.14.23 -Scope CurrentUser -Force
-          Install-Module Pester -MinimumVersion 5.7.0 -Scope CurrentUser -Force
-          Install-Module PSScriptAnalyzer -MinimumVersion 1.24.0 -Scope CurrentUser -Force
-          Install-Module powershell-yaml -MinimumVersion 0.4.12 -Scope CurrentUser -Force
+          Install-Module Plumber -RequiredVersion 0.0.27 -Scope CurrentUser -Force
+          Install-Module InvokeBuild -RequiredVersion 5.14.23 -Scope CurrentUser -Force
+          Install-Module Pester -RequiredVersion 5.7.1 -Scope CurrentUser -Force
+          Install-Module PSScriptAnalyzer -RequiredVersion 1.25.0 -Scope CurrentUser -Force
+          Install-Module powershell-yaml -RequiredVersion 0.4.12 -Scope CurrentUser -Force
 
       - name: Run Validate
         shell: pwsh
@@ -41,6 +43,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    concurrency:
+      group: release-${{ github.ref }}
+      cancel-in-progress: false
 
     steps:
       - uses: actions/checkout@v4
@@ -49,12 +56,12 @@ jobs:
         shell: pwsh
         run: |
           Set-PSRepository PSGallery -InstallationPolicy Trusted
-          Install-Module Plumber -Scope CurrentUser -Force
-          Install-Module InvokeBuild -MinimumVersion 5.14.23 -Scope CurrentUser -Force
-          Install-Module Pester -MinimumVersion 5.7.0 -Scope CurrentUser -Force
-          Install-Module PSScriptAnalyzer -MinimumVersion 1.24.0 -Scope CurrentUser -Force
-          Install-Module powershell-yaml -MinimumVersion 0.4.12 -Scope CurrentUser -Force
-          Install-Module Microsoft.PowerShell.PSResourceGet -Scope CurrentUser -Force
+          Install-Module Plumber -RequiredVersion 0.0.27 -Scope CurrentUser -Force
+          Install-Module InvokeBuild -RequiredVersion 5.14.23 -Scope CurrentUser -Force
+          Install-Module Pester -RequiredVersion 5.7.1 -Scope CurrentUser -Force
+          Install-Module PSScriptAnalyzer -RequiredVersion 1.25.0 -Scope CurrentUser -Force
+          Install-Module powershell-yaml -RequiredVersion 0.4.12 -Scope CurrentUser -Force
+          Install-Module Microsoft.PowerShell.PSResourceGet -RequiredVersion 1.2.0 -Scope CurrentUser -Force
 
       - name: Run Release
         shell: pwsh
