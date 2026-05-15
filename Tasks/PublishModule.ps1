@@ -41,6 +41,13 @@ Add-BuildTask -Name PublishModule -Jobs BuildModule, {
         return
     }
 
+    $repositoryStore = Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'PSResourceGet'
+    New-Item -Path $repositoryStore -ItemType Directory -Force | Out-Null
+    $repository = Get-PSResourceRepository -Name PSGallery -ErrorAction SilentlyContinue
+    if (-not $repository) {
+        Register-PSResourceRepository -PSGallery
+    }
+
     $publishSplat = @{
         Path       = $config.ModuleOutputRoot
         Repository = 'PSGallery'
