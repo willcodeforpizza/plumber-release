@@ -30,6 +30,8 @@ Describe 'Resolve-PlumberReleaseConfig' {
         $config.GitRemote | Should -Be 'origin'
         $config.ModuleBuildItems | Should -Contain 'Example.psd1'
         $config.ModuleBuildItems | Should -Contain 'Example.psm1'
+        $config.ModuleBuildItems | Should -Contain 'Tasks'
+        $config.ModuleBuildItems | Should -Contain 'docs'
     }
 
     It 'adds extra build items to the default item list' {
@@ -39,6 +41,35 @@ Describe 'Resolve-PlumberReleaseConfig' {
         }
 
         $config.ModuleBuildItems | Should -Contain 'docs'
+    }
+
+    It 'adds build item globs to the default item list' {
+        $config = Resolve-PlumberReleaseConfig -BuildRoot $moduleRoot -Config @{
+            ModuleManifest      = 'Example.psd1'
+            ModuleBuildAddItems = @('assets/*.json')
+        }
+
+        $config.ModuleBuildItems | Should -Contain 'assets/*.json'
+    }
+
+    It 'does not add empty build items when optional config is omitted' {
+        $config = Resolve-PlumberReleaseConfig -BuildRoot $moduleRoot -Config @{
+            ModuleManifest = 'Example.psd1'
+        }
+
+        $config.ModuleBuildItems | Should -Not -Contain ''
+        $config.ModuleBuildItems | Should -Not -Contain $null
+    }
+
+    It 'removes build item globs from the item list' {
+        $config = Resolve-PlumberReleaseConfig -BuildRoot $moduleRoot -Config @{
+            ModuleManifest         = 'Example.psd1'
+            ModuleBuildRemoveItems = @('docs', 'Resource*')
+        }
+
+        $config.ModuleBuildItems | Should -Not -Contain 'docs'
+        $config.ModuleBuildItems | Should -Not -Contain 'Resource'
+        $config.ModuleBuildItems | Should -Contain 'Tasks'
     }
 
     It 'allows callers to replace the build item list' {

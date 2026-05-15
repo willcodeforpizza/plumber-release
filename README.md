@@ -22,8 +22,9 @@ Publishing is dry-run by default. Set `PSGALLERY_PUBLISH_CONFIRM=true` and
 Import-Module Plumber.Release
 
 . (Get-PlumberReleaseTaskLoader) -Config @{
-    ModuleManifest        = 'MyModule.psd1'
-    ModuleBuildExtraItems = @('docs')
+    ModuleManifest         = 'MyModule.psd1'
+    ModuleBuildAddItems    = @('assets/*.json')
+    ModuleBuildRemoveItems = @('docs')
 }
 ```
 

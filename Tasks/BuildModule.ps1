@@ -27,13 +27,27 @@ Add-BuildTask -Name BuildModule -Jobs SetReleaseState, {
     New-Item -Path $config.ModuleOutputRoot -ItemType Directory -Force | Out-Null
 
     foreach ($item in $config.ModuleBuildItems) {
-        $source = Join-Path $config.ModuleRoot $item
-        if (-not (Test-Path $source)) {
+        $sourcePattern = Join-Path $config.ModuleRoot $item
+        $sources = Resolve-Path -Path $sourcePattern -ErrorAction SilentlyContinue
+        if (-not $sources) {
             Write-Verbose "Skipping missing item: $item"
             continue
         }
 
-        Copy-Item -Path $source -Destination $config.ModuleOutputRoot -Recurse -Force
+        foreach ($source in $sources) {
+            $sourceItem = Get-Item -LiteralPath $source.ProviderPath
+            $relativePath = [System.IO.Path]::GetRelativePath($config.ModuleRoot, $sourceItem.FullName)
+            $destination = Join-Path $config.ModuleOutputRoot $relativePath
+
+            if ($sourceItem.PSIsContainer) {
+                New-Item -Path (Split-Path $destination -Parent) -ItemType Directory -Force | Out-Null
+                Copy-Item -LiteralPath $sourceItem.FullName -Destination $destination -Recurse -Force
+                continue
+            }
+
+            New-Item -Path (Split-Path $destination -Parent) -ItemType Directory -Force | Out-Null
+            Copy-Item -LiteralPath $sourceItem.FullName -Destination $destination -Force
+        }
     }
 
     $manifestPath = Join-Path $config.ModuleOutputRoot "$($config.ModuleName).psd1"

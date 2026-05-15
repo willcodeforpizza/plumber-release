@@ -48,6 +48,8 @@ function Resolve-PlumberReleaseConfig {
         'Private',
         'Public',
         'Resource',
+        'Tasks',
+        'docs',
         'LICENSE',
         'README.md',
         'CHANGELOG.md',
@@ -58,7 +60,17 @@ function Resolve-PlumberReleaseConfig {
     $buildItems = if ($Config.ModuleBuildItems) {
         @($Config.ModuleBuildItems)
     } else {
-        $defaultItems + @($Config.ModuleBuildExtraItems)
+        $defaultItems + @($Config.ModuleBuildExtraItems) + @($Config.ModuleBuildAddItems)
+    }
+    $buildItems = @($buildItems | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+
+    $removeItems = @($Config.ModuleBuildRemoveItems |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    if ($removeItems) {
+        $buildItems = @($buildItems | Where-Object {
+            $item = $_
+            -not ($removeItems | Where-Object { $item -like $_ })
+        })
     }
 
     [pscustomobject]@{

@@ -8,7 +8,8 @@
     .PARAMETER Config
     Repository-specific release configuration. Supported keys are
     ModuleManifest, ModuleRoot, ModuleName, ModuleOutputRoot, ModuleBuildItems,
-    ModuleBuildExtraItems, Repository and GitRemote.
+    ModuleBuildExtraItems, ModuleBuildAddItems, ModuleBuildRemoveItems,
+    Repository and GitRemote.
 #>
 param(
     [hashtable]
