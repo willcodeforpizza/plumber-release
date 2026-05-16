@@ -1,6 +1,6 @@
 @{
     RootModule           = 'Plumber.Release.psm1'
-    ModuleVersion        = '0.1.1'
+    ModuleVersion        = '0.1.2'
     GUID                 = '961fe657-aa71-4342-9fa0-008bb5275313'
     Author               = 'willcodeforpizza'
     CompanyName          = 'willcodeforpizza'
@@ -16,7 +16,7 @@
     ModuleList           = @(
         @{
             ModuleName    = 'Plumber'
-            ModuleVersion = '0.0.27'
+            ModuleVersion = '0.0.30'
         }
         @{
             ModuleName    = 'InvokeBuild'

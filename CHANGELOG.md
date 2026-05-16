@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2
+
+- Changed CI validation to use `Invoke-Plumber`.
+- Updated Plumber dependency to 0.0.30.
+
 ## 0.1.1
 
 - Fixed PSResourceGet repository store initialization before publishing.
