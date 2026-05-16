@@ -40,6 +40,7 @@ jobs:
       - name: Run Validate
         shell: pwsh
         run: |
+          Import-Module ./Plumber.Release.psd1 -Force
           Invoke-Plumber -Task Validate -OutputMode CI
 
   release:
@@ -85,4 +86,4 @@ jobs:
           }
 
           Import-Module ./Plumber.Release.psd1 -Force
-          Invoke-Build -File ./Plumber.Release.build.ps1 Release
+          Invoke-Plumber -Task Release -OutputMode CI

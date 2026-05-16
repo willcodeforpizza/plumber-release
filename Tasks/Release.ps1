@@ -13,11 +13,10 @@
 
     .RUN
     ```powershell
-    Invoke-Build -File ./Release.build.ps1 Release
+    Invoke-Plumber -Task Release
     ```
 #>
 if ($script:_loadedPlumberReleaseRelease) { return }
 $script:_loadedPlumberReleaseRelease = $true
 
 Add-BuildTask -Name Release -Jobs SetReleaseState, BuildModule, PublishModule, PublishGitHubRelease
-Add-BuildTask -Name . -Jobs Release

@@ -11,7 +11,7 @@
 
     .RUN
     ```powershell
-    Invoke-Build -File ./Release.build.ps1 PublishModule
+    Invoke-Plumber -Task PublishModule
     ```
 #>
 if ($script:_loadedPlumberReleasePublishModule) { return }
