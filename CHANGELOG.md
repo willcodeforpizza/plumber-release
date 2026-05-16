@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.4
+
+- Changed release publishing to require PSResourceGet from Plumber dependencies.
+- Removed Plumber internal task dependencies from the release module manifest.
+- Moved Plumber build dependencies to `Plumber.dependencies.psd1`.
+
 ## 0.1.3
 
 - Changed build validation to assume `Invoke-Plumber` is the public entry point.

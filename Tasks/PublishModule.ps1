@@ -36,10 +36,7 @@ Add-BuildTask -Name PublishModule -Jobs BuildModule, {
         return
     }
 
-    if (-not (Get-Command Publish-PSResource -ErrorAction SilentlyContinue)) {
-        Write-Error 'Publish-PSResource is required. Install Microsoft.PowerShell.PSResourceGet.'
-        return
-    }
+    Import-PlumberReleasePSResourceGet
 
     $repositoryStore = Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'PSResourceGet'
     New-Item -Path $repositoryStore -ItemType Directory -Force | Out-Null
