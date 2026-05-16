@@ -16,7 +16,7 @@
     ModuleList           = @(
         @{
             ModuleName    = 'Plumber'
-            ModuleVersion = '0.0.29'
+            ModuleVersion = '0.0.30'
         }
         @{
             ModuleName    = 'InvokeBuild'
