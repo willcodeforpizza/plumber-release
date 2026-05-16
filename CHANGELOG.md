@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.3
+
+- Changed build validation to assume `Invoke-Plumber` is the public entry point.
+- Removed the default `.` release task registration.
+
 ## 0.1.2
 
 - Changed CI validation to use `Invoke-Plumber`.
