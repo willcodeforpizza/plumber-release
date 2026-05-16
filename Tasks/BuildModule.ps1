@@ -8,7 +8,7 @@
 
     .RUN
     ```powershell
-    Invoke-Build -File ./Release.build.ps1 BuildModule
+    Invoke-Plumber -Task BuildModule
     ```
 #>
 if ($script:_loadedPlumberReleaseBuildModule) { return }

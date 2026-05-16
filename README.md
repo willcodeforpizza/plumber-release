@@ -1,6 +1,6 @@
 # Plumber.Release
 
-Invoke-Build release tasks for PowerShell modules.
+Release tasks for Plumber validation pipelines.
 
 Plumber.Release is a small companion to Plumber. Plumber owns local validation
 pipelines; Plumber.Release owns the narrow release workflow for modules that
@@ -19,8 +19,6 @@ Publishing is dry-run by default. Set `PSGALLERY_PUBLISH_CONFIRM=true` and
 ## Configuration
 
 ```powershell
-Import-Module Plumber.Release
-
 . (Get-PlumberReleaseTaskLoader) -Config @{
     ModuleManifest          = 'MyModule.psd1'
     ModuleBuildIncludeItems = @('assets/*.json')
@@ -60,7 +58,7 @@ Missing items are skipped.
 Run the release pipeline:
 
 ```powershell
-Invoke-Build -File ./Release.build.ps1 Release
+Invoke-Plumber -Task Release
 ```
 
 ## Repository setup

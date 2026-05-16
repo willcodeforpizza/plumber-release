@@ -11,7 +11,7 @@
 
     .RUN
     ```powershell
-    Invoke-Build -File ./Release.build.ps1 PublishGitHubRelease
+    Invoke-Plumber -Task PublishGitHubRelease
     ```
 #>
 if ($script:_loadedPlumberReleasePublishGitHubRelease) { return }
