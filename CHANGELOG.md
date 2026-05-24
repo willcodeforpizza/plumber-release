@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.7
+
+- Added task-aligned scopes to Plumber dependency declarations.
+
 ## 0.1.6
 
 - Fixed tag release validation by comparing Plumber.Release versions against
