@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.6
+
+- Fixed tag release validation by comparing Plumber.Release versions against
+  PSGallery instead of the current release tag.
+
 ## 0.1.5
 
 - Added tag-driven release tasks: `TestReleaseReadiness`, `NewReleaseTag`,
