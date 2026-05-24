@@ -4,7 +4,20 @@ BeforeAll {
 }
 
 Describe 'Get-PlumberReleaseState' {
+    BeforeAll {
+        $script:previousGitHubRefName = $env:GITHUB_REF_NAME
+    }
+
+    AfterAll {
+        if ($null -eq $script:previousGitHubRefName) {
+            Remove-Item Env:/GITHUB_REF_NAME -ErrorAction SilentlyContinue
+        } else {
+            $env:GITHUB_REF_NAME = $script:previousGitHubRefName
+        }
+    }
+
     BeforeEach {
+        Remove-Item Env:/GITHUB_REF_NAME -ErrorAction SilentlyContinue
         $moduleRoot = Join-Path $TestDrive 'Module'
         New-Item -Path $moduleRoot -ItemType Directory -Force | Out-Null
         Set-Content -Path (Join-Path $moduleRoot 'Example.psd1') -Value @"
