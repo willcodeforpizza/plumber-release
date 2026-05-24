@@ -6,8 +6,7 @@
     Builds a clean module folder and publishes it with Publish-PSResource.
     The API key is read from PSGALLERY_API_KEY.
 
-    By default this task runs with -WhatIf. Set PSGALLERY_PUBLISH_CONFIRM to
-    true to publish for real.
+    Requires PSGALLERY_API_KEY and publishes the built module folder.
 
     .RUN
     ```powershell
@@ -19,19 +18,13 @@ $script:_loadedPlumberReleasePublishModule = $true
 
 Add-BuildTask -Name PublishModule -Jobs BuildModule, {
     $config = $script:PlumberReleaseConfig
-    if (-not $script:PlumberReleaseState.ShouldRelease) {
-        Write-Build Yellow 'Skipping PublishModule because this version is already released.'
-        return
-    }
     if ('PSGallery' -notin $config.ReleaseTargets) {
         Write-Build Yellow 'Skipping PublishModule because PSGallery is not a release target.'
         return
     }
 
     $apiKey = $env:PSGALLERY_API_KEY
-    $publishConfirmed = $env:PSGALLERY_PUBLISH_CONFIRM -eq 'true'
-
-    if ($publishConfirmed -and -not $apiKey) {
+    if (-not $apiKey) {
         Write-Error 'Set PSGALLERY_API_KEY before running PublishModule.'
         return
     }
@@ -49,10 +42,7 @@ Add-BuildTask -Name PublishModule -Jobs BuildModule, {
         Path       = $config.ModuleOutputRoot
         Repository = 'PSGallery'
         Verbose    = $true
-        WhatIf     = -not $publishConfirmed
-    }
-    if ($apiKey) {
-        $publishSplat.ApiKey = $apiKey
+        ApiKey     = $apiKey
     }
 
     Publish-PSResource @publishSplat

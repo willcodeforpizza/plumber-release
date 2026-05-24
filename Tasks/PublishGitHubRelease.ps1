@@ -1,13 +1,9 @@
 <#
     .SYNOPSIS
-    Creates the GitHub tag and release for a module.
+    Creates or updates the GitHub release for a module tag.
 
     .DESCRIPTION
-    Uses the module manifest version to create a v<version> git tag and a
-    GitHub release with notes from the matching changelog section.
-
-    By default this task only reports what it would do. Set
-    GITHUB_RELEASE_CONFIRM to true to create and push the tag and release.
+    Uses the release state tag and notes from the matching changelog section.
 
     .RUN
     ```powershell
@@ -17,12 +13,8 @@
 if ($script:_loadedPlumberReleasePublishGitHubRelease) { return }
 $script:_loadedPlumberReleasePublishGitHubRelease = $true
 
-Add-BuildTask -Name PublishGitHubRelease -Jobs {
+Add-BuildTask -Name PublishGitHubRelease -Jobs SetReleaseState, {
     $config = $script:PlumberReleaseConfig
-    if (-not $script:PlumberReleaseState.ShouldRelease) {
-        Write-Build Yellow 'Skipping PublishGitHubRelease because this version is already released.'
-        return
-    }
     if ('GitHub' -notin $config.ReleaseTargets) {
         Write-Build Yellow 'Skipping PublishGitHubRelease because GitHub is not a release target.'
         return
@@ -35,36 +27,12 @@ Add-BuildTask -Name PublishGitHubRelease -Jobs {
 
     $version = $script:PlumberReleaseState.Version
     $tagName = $script:PlumberReleaseState.TagName
+    $releaseNotesPath = Get-PlumberReleaseNote -Config $config -Version $version
 
-    $changelogPath = Join-Path $config.ModuleRoot 'CHANGELOG.md'
-    $changelog = Get-Content $changelogPath
-    $sectionStart = [array]::IndexOf($changelog, "## $version")
-    if ($sectionStart -lt 0) {
-        Write-Error "No changelog section found for version $version."
-        return
+    gh release view $tagName *> $null
+    if ($LASTEXITCODE -eq 0) {
+        gh release edit $tagName --title $tagName --notes-file $releaseNotesPath
+    } else {
+        gh release create $tagName --title $tagName --notes-file $releaseNotesPath
     }
-
-    $sectionEnd = $changelog.Count
-    for ($i = $sectionStart + 1; $i -lt $changelog.Count; $i++) {
-        if ($changelog[$i] -match '^## \d') {
-            $sectionEnd = $i
-            break
-        }
-    }
-
-    $releaseNotes = @($changelog[($sectionStart + 1)..($sectionEnd - 1)]).Trim() |
-        Where-Object { $_ }
-    $releaseNotesPath = Join-Path ([System.IO.Path]::GetTempPath()) "$($config.ModuleName)-release-notes.md"
-    Set-Content -Path $releaseNotesPath -Value $releaseNotes
-
-    if ($env:GITHUB_RELEASE_CONFIRM -ne 'true') {
-        Write-Build Yellow "Would create and push git tag $tagName to $($config.GitRemote)"
-        Write-Build Yellow "Would create GitHub release $tagName"
-        Write-Build Yellow 'Set GITHUB_RELEASE_CONFIRM=true to publish the release.'
-        return
-    }
-
-    git tag $tagName
-    git push $config.GitRemote $tagName
-    gh release create $tagName --title $tagName --notes-file $releaseNotesPath
 }

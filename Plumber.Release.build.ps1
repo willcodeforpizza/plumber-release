@@ -2,7 +2,11 @@
     ModuleManifest = 'Plumber.Release.psd1'
     Tasks          = @{
         ModuleVersion        = @{
-            Source = 'GitTag'
+            RunWhen = 'OnRelease'
+            Source  = 'GitTag'
+        }
+        ChangelogUpdated     = @{
+            RunWhen = 'OnRelease'
         }
         PublicFunctionPrefix = @{
             Prefix = 'PlumberRelease'

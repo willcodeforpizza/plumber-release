@@ -14,12 +14,8 @@
 if ($script:_loadedPlumberReleaseBuildModule) { return }
 $script:_loadedPlumberReleaseBuildModule = $true
 
-Add-BuildTask -Name BuildModule -Jobs SetReleaseState, {
+Add-BuildTask -Name BuildModule -Jobs {
     $config = $script:PlumberReleaseConfig
-    if (-not $script:PlumberReleaseState.ShouldRelease) {
-        Write-Build Yellow 'Skipping BuildModule because this version is already released.'
-        return
-    }
 
     if (Test-Path $config.ModuleOutputRoot) {
         Remove-Item $config.ModuleOutputRoot -Recurse -Force

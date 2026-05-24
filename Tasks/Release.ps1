@@ -3,13 +3,12 @@
     Runs the module release pipeline.
 
     .DESCRIPTION
-    Builds the module, publishes it to PowerShell Gallery, and creates the
-    GitHub release.
+    Validates release readiness, creates the annotated release tag, and pushes
+    it to the configured git remote. Pushing the tag starts the CI publishing
+    workflow.
 
     .INCLUDES
-    BuildModule
-    PublishModule
-    PublishGitHubRelease
+    PushReleaseTag
 
     .RUN
     ```powershell
@@ -19,4 +18,4 @@
 if ($script:_loadedPlumberReleaseRelease) { return }
 $script:_loadedPlumberReleaseRelease = $true
 
-Add-BuildTask -Name Release -Jobs SetReleaseState, BuildModule, PublishModule, PublishGitHubRelease
+Add-BuildTask -Name Release -Jobs PushReleaseTag

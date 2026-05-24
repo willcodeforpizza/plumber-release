@@ -8,13 +8,18 @@ publish to PowerShell Gallery and GitHub Releases.
 
 ## Tasks
 
+- `TestReleaseReadiness` checks version, changelog, tag availability, and a
+  clean working tree before a release tag is created.
+- `NewReleaseTag` creates the annotated `v<ModuleVersion>` tag.
+- `PushReleaseTag` pushes the release tag to the configured remote.
 - `BuildModule` stages a clean publishable module folder.
 - `PublishModule` publishes the staged folder with `Publish-PSResource`.
-- `PublishGitHubRelease` creates the version tag and GitHub release.
-- `Release` runs the full workflow.
+- `PublishGitHubRelease` creates or updates the GitHub release for the tag.
+- `PublishTaggedRelease` publishes from the tag that triggered CI.
+- `Release` creates and pushes the release tag.
 
-Publishing is dry-run by default. Set `PSGALLERY_PUBLISH_CONFIRM=true` and
-`GITHUB_RELEASE_CONFIRM=true` to publish for real.
+Pushing the tag is the manual release action. CI publishes from that tag with
+`PublishTaggedRelease`.
 
 ## Configuration
 
@@ -33,9 +38,9 @@ Publishing is dry-run by default. Set `PSGALLERY_PUBLISH_CONFIRM=true` and
 | `ModuleRoot` | Current build root | Repository or module root used for relative paths. |
 | `ModuleName` | Manifest base name | Module name used for output paths and manifest lookup. |
 | `ModuleOutputRoot` | Temp path named for the module | Clean staging folder passed to `Publish-PSResource`. |
-| `ModuleBuildIncludeItems` | None | Includes files, folders, or relative glob patterns in addition to the built-in list. |
+| `ModuleBuildIncludeItems` | None | Adds files, folders, or relative globs to the built-in list. |
 | `ModuleBuildExcludeItems` | None | Excludes items from the final list using wildcard matching. |
-| `ReleaseTargets` | `@('PSGallery', 'GitHub')` | Release destinations. Use `@('GitHub')` to skip PowerShell Gallery publishing. |
+| `ReleaseTargets` | `@('PSGallery', 'GitHub')` | Release destinations. Use `@('GitHub')` to skip PSGallery. |
 | `GitRemote` | `origin` | Remote used when checking and pushing release tags. |
 
 The built-in item list is:
@@ -61,6 +66,13 @@ Run the release pipeline:
 Invoke-Plumber -Task Release
 ```
 
+The release workflow should run from pushed tags matching `v*`, set
+`PLUMBER_RELEASE_INTENT=true` for validation, then run:
+
+```powershell
+Invoke-Plumber -Task PublishTaggedRelease
+```
+
 ## Repository setup
 
 Add the PowerShell Gallery API key as a repository secret:
@@ -69,8 +81,8 @@ Add the PowerShell Gallery API key as a repository secret:
 gh secret set PSGALLERY_API_KEY --repo owner/repo
 ```
 
-The workflow uses GitHub's built-in `GITHUB_TOKEN` for tag pushes and GitHub
-release creation. The workflow needs `contents: write` on the release job.
+The workflow uses GitHub's built-in `GITHUB_TOKEN` for GitHub release creation.
+The release job needs `contents: write`.
 
 Protect the `main` branch:
 
@@ -100,4 +112,4 @@ JSON
 ```
 
 Do not require the `Release` check in branch protection. It runs only after a
-push to `main`; pull requests only run the OS validation matrix.
+release tag is pushed; pull requests only run the OS validation matrix.
