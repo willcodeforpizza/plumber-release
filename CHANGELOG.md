@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.5
+
+- Added tag-driven release tasks: `TestReleaseReadiness`, `NewReleaseTag`,
+  `PushReleaseTag`, and `PublishTaggedRelease`.
+- Changed `Release` to create and push the annotated release tag instead of
+  publishing directly.
+- Changed publishing to run from an existing matching tag in CI.
+
 ## 0.1.4
 
 - Changed release publishing to require PSResourceGet from Plumber dependencies.

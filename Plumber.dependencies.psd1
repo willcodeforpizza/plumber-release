@@ -2,7 +2,7 @@
     Modules = @(
         @{
             ModuleName    = 'Plumber'
-            ModuleVersion = '0.0.32'
+            ModuleVersion = '0.0.41'
         }
         @{
             ModuleName    = 'Microsoft.PowerShell.PSResourceGet'

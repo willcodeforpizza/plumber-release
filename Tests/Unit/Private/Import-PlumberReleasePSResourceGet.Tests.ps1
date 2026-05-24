@@ -4,7 +4,7 @@ BeforeAll {
 
 Describe 'Import-PlumberReleasePSResourceGet' {
     AfterEach {
-        Remove-Item Function:\Publish-PSResource -ErrorAction SilentlyContinue
+        Remove-Item Function:/Publish-PSResource -ErrorAction SilentlyContinue
     }
 
     It 'returns when Publish-PSResource is already available' {
@@ -18,7 +18,7 @@ Describe 'Import-PlumberReleasePSResourceGet' {
 
     It 'imports PSResourceGet when Publish-PSResource is missing' {
         Mock Get-Command {
-            if (Get-Item Function:\Publish-PSResource -ErrorAction SilentlyContinue) {
+            if (Get-Item Function:/Publish-PSResource -ErrorAction SilentlyContinue) {
                 [pscustomobject]@{ Name = 'Publish-PSResource' }
             }
         } -ParameterFilter {

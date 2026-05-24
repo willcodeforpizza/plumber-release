@@ -25,7 +25,11 @@ foreach ($privateScript in Get-ChildItem (Join-Path $moduleRoot 'Private') -Filt
 $script:PlumberReleaseConfig = Resolve-PlumberReleaseConfig -Config $Config -BuildRoot $BuildRoot
 
 . (Join-Path $PSScriptRoot 'SetReleaseState.ps1')
+. (Join-Path $PSScriptRoot 'TestReleaseReadiness.ps1')
+. (Join-Path $PSScriptRoot 'NewReleaseTag.ps1')
+. (Join-Path $PSScriptRoot 'PushReleaseTag.ps1')
 . (Join-Path $PSScriptRoot 'BuildModule.ps1')
 . (Join-Path $PSScriptRoot 'PublishModule.ps1')
 . (Join-Path $PSScriptRoot 'PublishGitHubRelease.ps1')
+. (Join-Path $PSScriptRoot 'PublishTaggedRelease.ps1')
 . (Join-Path $PSScriptRoot 'Release.ps1')
