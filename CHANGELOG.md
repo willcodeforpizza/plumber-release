@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Bumped Plumber dependency to 0.0.62.
+- Changed CI dependency bootstrap to use Plumber's explicit dependency install flow.
+
 ## 0.1.6
 
 - Fixed tag release validation by comparing Plumber.Release versions against

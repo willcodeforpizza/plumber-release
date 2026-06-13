@@ -4,6 +4,12 @@
         PublicFunctionPrefix = @{
             Prefix = 'PlumberRelease'
         }
+        ModuleVersion        = @{
+            RunWhen = 'OnRelease'
+        }
+        ChangelogUpdated     = @{
+            RunWhen = 'OnRelease'
+        }
     }
 }
 
