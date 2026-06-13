@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Bumped Plumber dependency to 0.0.81.
+- Changed CI dependency bootstrap to use Plumber 0.0.81's explicit dependency install flow.
+- Removed PSResourceGet from the Plumber dependency file; publishing still
+  validates `Publish-PSResource` at publish time.
+- Changed validation CI to install only Plumber validation dependencies; release
+  dependencies stay in the release job.
+
 ## 0.1.6
 
 - Fixed tag release validation by comparing Plumber.Release versions against
