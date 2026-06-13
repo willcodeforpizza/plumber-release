@@ -2,8 +2,8 @@
 
 ## Unreleased
 
-- Bumped Plumber dependency to 0.0.62.
-- Changed CI dependency bootstrap to use Plumber's explicit dependency install flow.
+- Bumped Plumber dependency to 0.0.81.
+- Changed CI dependency bootstrap to use Plumber 0.0.81's explicit dependency install flow.
 
 ## 0.1.6
 
