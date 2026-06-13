@@ -4,6 +4,8 @@
 
 - Bumped Plumber dependency to 0.0.81.
 - Changed CI dependency bootstrap to use Plumber 0.0.81's explicit dependency install flow.
+- Removed PSResourceGet from the Plumber dependency file; publishing still
+  validates `Publish-PSResource` at publish time.
 
 ## 0.1.6
 
