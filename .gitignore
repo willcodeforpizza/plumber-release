@@ -2,3 +2,4 @@ out/
 coverage.xml
 *.xml
 *.log
+.review-hounds/
